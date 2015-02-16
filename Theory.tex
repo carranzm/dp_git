@@ -1,0 +1,176 @@
+\clearpage
+\section{Theoretical Background}
+
+Before we will go deep, we will establish a theoretical background to clarify some concepts that we will be using on this work. 
+
+\subsection{Finances}
+
+First, we will start with some non-computer-science related topic, that in our case is important because we need to understand the basics of \emph{why stock prices change?}, and for this we will rely on the work of Pattel: \emph{"Profit from prices"} \cite{P2007}.
+
+
+ \subsubsection{How the market works?}
+	\emph{"Any market is made of buyers and sellers/suppliers and there is always a conflict going on between these two groups. Buyers want to pay the minimum possible price while sellers on the other hand want to get maximum possible price. If the price is too low, buyers would demand a large quantity but sellers would not want to sell much at this low price. If price is too high, sellers would love to sell a large quantity but buyers would not want to buy much. This is a kind of war between two groups - one trying to push prices lower and the other one trying to push prices higher. In market economy, price keeps changing until it reaches a point where the quantity demanded by buyers equals quantity supplied by sellers."}
+
+ \subsubsection{What causes stock prices to change?}
+	\emph{"One will see these Demand and Supply curves change more rapidly for a stock than for any other item. That is why we see stock prices changing almost every moment. For a stock, individuals and institutions that hold the stock or intend to short the stock are the potential sellers and they collectively define the supply curve. There are thousands, if not millions, of reasons that may motivate or prompt a market participant to sell a particular stock he or she is holding or intending to short sell. Similarly, individuals and institutions that are thinking/planning to buy the stock form the Demand curve. There would also be several reasons why they want to buy this stock. As we all know, a stock’s price is likely to go up if the Demand is increasing or the Supply is decreasing. Similarly it is no rocket science to figure out that a stock’s price would drop if the Demand is shrinking and/or the Supply is expanding. So when a trader is buying a stock, he wants its prices to go up after he has bought it. He wants the Demand for the stock to go up or the supply to dry up."}
+	
+ \subsubsection{How often the stock prices change?}
+	\emph{"The demand and supply curves for any stock are constantly changing. Variety of economy, industry related or company related events, news, discussions, analyst reports and political and global developments constantly change the demand and supply curves for any stock. Add to this, the fact that given a certain piece of information, a person can’t be sure how people will react to it. Aren’t you surprised to see that even after some unexpected strong positive news about a stock, the stock keeps being traded! Ideally, if the news is too good, everybody should be a buyer and there should be no seller! If there were no seller, there would be no trade! But the fact that most of the stocks keep trading every moment when the Market is open indicates just one thing: There are people with totally different views about the prospects of a stock at any given moment. Everyone who is driven to buy or sell a stock has his own criteria to value the stock, his own set of expectations, and his own unique financial situations and circumstances. This makes it almost impossible to draw complete demand and supply curve for any stock at any point in time."}
+	
+ \subsubsection{What does the stock price represent?}
+	\\ \emph{"The net impact of everything happening in a stock or a company gets immediately reflected in the price of the stock. Price is the point where millions of different counter acting forces balance out. So with enough attention to changes in the price of a stock over a day or two, there will be times when we can visualize changes that are taking place in aggregate demand/supply of that stock, and based on that, we will be able to determine in which direction the price of the stock is likely to move over the next few days. There is no need to get into complex world of demand and supply curves; all we need is to keep an eye on where the balance between them is heading."}
+
+
+\clearpage
+\subsection{Parallel Computing}\label{ParallelComputing}
+
+In order to evaluate our gain or loss by implementing multi-threading in our framework we will cite the work of Professor Tvrdík \cite{T2011} in the chapter of his book \emph{Performance and Scalability of parallel algorithms}, where there are some useful metrics to measure the performance of parallel algorithms. We will be using this metrics further in our work.
+
+
+ \subsubsection{Parallel time T(n,p)}\label{ParTime}
+Is the time elapsed from the beginning of a p-processor (In our case we will consider software threads) parallel algorithm solving a problem instance of size \emph{n} until the last processor finishes the execution. \emph{T(n,p)} is obtained by \emph{counting} or by \emph{measuring the total time complexity} of:
+	\begin{itemize}
+		\item \emph{parallel computationl} steps. e.g., arithmetic operations.
+		\item \emph{parallel communication} steps. i.e., transfers and exchanges of data between processors.
+	\end{itemize}	
+	Due to the second component \emph{T(n,p)} depends on the architecture of a parallel computer. Therefore the performance evaluation of a parallel algorithm must \emph{always} consider the architecture. In a specific algorithm, \emph{p} is always chosen as a suitable function of \emph{n}.
+
+ \subsubsection{Parallel Speedup S(n,p)}\label{ParSpeedup}
+If both, sequential and parallel algorithm with \emph{p} processors are executed under the same conditions, the best speedup we can hope is for \emph{p}. Due to the communication overhead, such a speedup is achievable only if the solution of the problem contains enough parallelism, the communication part is negligible, and all the processors perform only useful computation under ideal load balancing and synchronisation. In practice, a linear speedup \emph{k*p} for some constant 0 \textless k \textless 1 is quite satisfactory.
+	
+ \subsubsection{Parallel cost C(n,p)}\label{ParCost}
+	\[C(n,p) = p * T(n,p) \] 
+	This metric is a bit coarse-grained. It is actually an upper estimate of the operational complexity. It gives the total number of operations as if all processors were active since the beginning till the end (like the slowest processor). But this is what parallel systems with job schedulers typically allow: prior to a parallel computation, a user job is assigned p processors and these are released only after the whole parallel computation has finished. In such systems, \emph{C(n,p)} is a useful metric, since idling processors or processors that finished their subtasks faster are useless for the other users until the whole computation finishes. Since any parallel algorithm can be trivially simulated on a uniprocessor machine with multiprogramming, we get that \emph{The parallel Cost, cannot be less than the complexity of the best sequential algorithm:}
+	\[C(n,p) = \Omega(SU(n)) \] 
+	\emph{In the best case, the cost is of the same order as the sequential complexity:}
+	\[C(n,p) = O(SU(n)) \] 
+	
+ \subsubsection{Parallel Efficiency E(n,p)}\label{ParEfficiency}
+	\[E(n,p) = \frac{SU(n)}{C(n,p)} = \frac{S(n,p) * T(n,p)}{p * T(n,p)} =  \frac{S(n,p)}{p} \leq 1 \] 
+	Basically, the Parallel efficiency is the speedup per processor.
+
+ \subsubsection{Barrier Synchronization}\label{BarrierSynchronization}
+	Each processor stops at a logical point in the program until all processor arrives to this point. Then all processors can continue.
+
+\clearpage
+\subsection{Statistics}\label{statistics}
+
+In our work, there are several statistics-related topics, which we need to understand and clarify, because our \emph{Sentiment Analysis Framework} (\ref{sentimentAnalysis}) rely mostly on \emph{Pointwise mutual information - PMI} (\ref{PMI}). We will need as well another simple concept for the analysis that we will be performing to the retrieved information in chapter \ref{experimentalEvaluation}, which is the \emph{Pearson correlation coefficient} (\ref{PearsonCorr}).
+
+\subsubsection{Random Variables}\label{RandomVariable}
+
+In order to define our framework, first we need a simple statistical concept and we will rely on the work of Anderson \cite{AN2011}; A \emph{Random variable} is a numerical description of the outcome of an experiment, and its particular value depends on the outcome of the experiment, and they can be classified as being either \emph{discrete} or \emph{continuous} depending on the numerical value it assumes.
+
+In our case, for this work , we will focus on the \emph{discrete} random variables, which assume either a finite number of values or an infinite sequence of values such as 0,1,2, ..., +\infty.
+
+We will use the \emph{Discreate random variables} when we will calculate the \emph{Pointwise mutual information} (\ref{PMI}).
+
+ \subsubsection{Mean}\label{mean}
+
+This is quite common, simple and useful concept. In order to establish the mathematical background, we will define the \emph{Simple arithmetic mean} relying on the work of Arulmozhi \cite{ARU2009}, which is obtained by summing up all elements \begin{math}X_{i}\end{math} of the set and divide it by the number of computed elements. Mathematically is defined as follows:
+
+\begin{equation} \label{eq:Mean}
+	\bar{X} = \frac{1}{n} \sum ^n _{i=1}X_i
+\end{equation}
+
+\subsubsection{Variance}\label{variance}
+
+In order to introduce the \emph{Pearson correlation coefficient} (\ref{PearsonCorr}), we first must define how it is composed, for that we will start with the \emph{variance}, and we will rely on the work of Anderson \cite{AN2011} which states that the \emph{variance} is a measure of variability that utilises all the data, and is based on the difference of the value of each observation \begin{math}X_{i}\end{math} and the mean. The difference between each \begin{math}X_{i}\end{math} and the mean (\begin{math}\bar{X}\end{math} for a sample, \begin{math}\mu\end{math} for a population) is called \emph{deviation about the mean}. For example, a deviation about the mean is written \begin{math}(X_{i} - \bar{X})\end{math}; for a population it is written \begin{math}(X_{i} - \mu)\end{math}. In the computation of the \emph{variance}, the deviations about the mean are \emph{squared}. 
+
+If the data are for a population, the average of the squared deviations is called: \emph{the population variance}, which is represented by \begin{math}\sigma ^2 _{X_i}\end{math}.
+
+In our case, we will use notation for the deviation about the mean \begin{math}(X_{i} - \bar{X})\end{math}, because we will be analysing a subset of the \emph{population} of news articles. We will exemplify for two \emph{random variables} it's variance in the equations: \ref{eq:VarX} and \ref{eq:VarY}, the Standard deviation is the square root of the variance of the random variable and is exemplified in the equations \ref{eq:sdX} and \ref{eq:sdY}.
+
+
+\begin{equation} \label{eq:VarX}
+	var X = \frac{\sum ^n _{i=1}{(X_i - \bar{X})}^2}{n}
+\end{equation}
+
+\begin{equation} \label{eq:sdX}
+	Standard Deviation X = \sqrt{var X} = \sqrt{\frac{\sum ^n _{i=1}{(X_i - \bar{X})}^2}{n}}
+\end{equation}
+
+\begin{equation} \label{eq:VarY}
+	var Y = \frac{\sum ^n _{i=1}{(Y_i - \bar{Y})}^2}{n}
+\end{equation}
+
+\begin{equation} \label{eq:sdY}
+	Standard Deviation Y = \sqrt{var Y} = \sqrt{\frac{\sum ^n _{i=1}{(Y_i - \bar{Y})}^2}{n}}
+\end{equation}
+
+
+ \subsubsection{Covariance}\label{covariance}
+
+Before introducing the \emph{Pearson correlation coefficient} (\ref{PearsonCorr}) we still need another statistical concept; \emph{covariance} which is a descriptive measure of the linear association or degree of overlap of the variables between two variables, it describes the extent to which a change in one variable (X) is paired with a comparable change in another variable (Y). For a sample size \emph{n} \begin{math}(X_{1},Y_{1}), (X_{2},Y_{2}), (X_{3},Y_{3}), ... , (X_{n},Y_{n}) \end{math} the sample covariance is defined according to Sharma \cite{PP2014} and Arulmozhi \cite{ARU2009} we have:
+
+\begin{equation} \label{eq:PearsonCovariance1}
+	Covariance (X, Y) = \frac{1}{n} \sum ^n _{i=1}(X_i - \bar{X})(Y_i - \bar{Y})
+\end{equation}
+
+According to the formula, is defined as the sum of the product of the deviations of the X and Y values from the means of X and Y.
+
+ \subsubsection{Pearson correlation coefficient}\label{PearsonCorr}
+ \emph{Pearson correlation coefficient} (Pearson's r) is a measure of the \emph{linear correlation} (dependence) between two variables X and Y, giving a value between \begin{math}+1\end{math} and \begin{math}-1\end{math} inclusive; as shown in the equation \ref{eq:PearsonRange}, where \begin{math}+1\end{math} is total positive correlation, \begin{math}0\end{math}is no correlation, and \begin{math}-1\end{math} is total negative correlation. It is widely used in the sciences as a measure of the degree of linear dependence between two variables.
+
+Pearson's correlation coefficient between two variables is defined as the covariance (equation: \ref{eq:PearsonCovariance1}) of the two variables divided by the product of their standard deviations. The form of the definition involves a "product moment", that is, the mean (the first moment about the origin) of the product of the mean-adjusted random variables; hence the modifier product-moment in the name.
+
+Pearson's correlation coefficient when applied to a sample is commonly represented by the letter r and may be referred to as the sample correlation coefficient or the sample Pearson correlation coefficient. And is calculated as follows: 
+
+\begin{equation} \label{eq:PearsonExtended}
+	r_{x,y} = \frac{\sum ^n _{i=1}(X_i - \bar{X})(Y_i - \bar{Y})}{\sqrt{\sum ^n _{i=1}(X_i - \bar{X})^2} \sqrt{\sum ^n _{i=1}(Y_i - \bar{Y})^2}}
+\end{equation}
+
+Simplifying the formula we will have:
+
+\begin{equation} \label{eq:Pearson1}
+	r_{x,y} = \frac{Covariance (X, Y)}{\sqrt{var X} \sqrt{var Y}}
+\end{equation}
+
+The range of the \emph{Pearson correlation coefficient}
+
+\begin{equation} \label{eq:PearsonRange}
+	-1 \leq r_{x,y} \leq +1
+\end{equation}
+
+
+
+We will mention some properties of the Pearson's coefficient according to Arulmozhi \cite{ARU2009}:
+
+	\begin{itemize}
+		\item The value of \begin{math}r_{x,y}\end{math} does not depend upon the units of measurement.
+		\item The value of \begin{math}r_{x,y}\end{math} does not depend upon which variable is labeled X and which is labeled Y (\begin{math}r_{x,y} = r_{x,y}\end{math})
+		\item Correlations lies between \begin{math}-1\end{math} and \begin{math}+1\end{math} as mentioned in the equation \ref{eq:PearsonRange}.
+		\item If \begin{math}r_{x,y} = \pm 1\end{math} then all the points of the scatter diagram lie exactly on a straight line and the correlation is said to be positive perfect or negative perfect, depending on the sign of the correlation.
+		\item \begin{math}r_{x,y}\end{math} measures only the linear relationship between X and Y.
+	\end{itemize}
+
+
+
+We will define some facts of the strength of the correlation.
+
+	\begin{itemize}
+		\item Strong or high correlation exists between between variables if  \begin{math}| r_{x,y} | \geq 0.75\end{math}
+		\item Moderate correlation exists between the variables if \begin{math} 0.5 \leq | r_{x,y} | \leq 0.75\end{math}
+		\item Weak or low correlation exists between the variables if \begin{math}| r_{x,y} | \leq 0.3\end{math}
+	\end{itemize}
+
+
+\subsubsection{Pointwise mutual information - PMI}\label{PMI}
+
+In order to introduce the concept of \emph{Pointwise mutual information} we will rely on several authors. According to Gelbukh \cite{G2009} \emph{Pointwise mutual information} gives the direction and strength of association (whether a bigram occurs more often or less often than expected, based on the frequency of its parts), but this measure is unreliable with spare data.
+
+Goldstein \cite{G2006} mentions that statisticians have devised methods for combining information in several conditional probabilities into a single number summarising the relevant information. One of this methods is \emph{Pointwise mutual information}, which is obtained by dividing the probability of two tonal sequences occurring together (in any order). Besides, is useful with binary events (e.g., boundary tones, which have only two values: H\% and L\%). When many tonal sequences are being considered, \emph{Pointwise mutual information} may produce a large array of numbers. To find a single number, one uses \emph{mutual information}, a weighted average of \emph{Pointwise mutual information} for every possible combination of tonal sequences. The weights used in the weighted average are given by the probability of each combination of sequences occurring.
+
+All this concepts are useful for us, but we will try to keep it simple, and for this we will help ourselves with the work of Sundaram \cite{SD2006} which states that the mutual information between two variables is defined as \emph{Pointwise mutual information}. Mathematically is defined as follows: 
+
+\begin{equation} \label{eq:PMI1}
+\operatorname{pmi}(x;y) \equiv \log_{2}\frac{p(x,y)}{p(x)p(y)} = \log_{2}\frac{p(x|y)}{p(x)} = \log_{2}\frac{p(y|x)}{p(y)}.
+\end{equation}
+
+According to the equation \ref{eq:PMI1} \emph{x} and \emph{y} are two discrete and independent random variables, and they can be regarded as the amount of information \emph{x} contains about \emph{y}, and the quantification of the discrepancy between the probability of their coincidence given their joint and individual distributions.
+
+And in our particular case and for our work, and as described by Trnka \cite{TR2011} we will approach the \emph{PMI} as the measure of how much one word tell us about the other, how much information we gain. This number can be positive or negative, as described in the equation \ref{eq:PMIRange}. For us, \emph{x} and \emph{y} are occurrences of particular words. The denominator \emph{P(x) * P(y)} is the expected value of \emph{P(x , y)}, assuming x and y are independent. 
+
+\begin{equation} \label{eq:PMIRange}
+	-\infty \leq \operatorname{pmi}(x;y) \leq +\infty
+\end{equation}

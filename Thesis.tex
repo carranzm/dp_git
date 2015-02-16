@@ -1,0 +1,147 @@
+% options:
+% thesis=B bachelor's thesis
+% thesis=M master's thesis
+% czech thesis in Czech language
+% english thesis in English language
+% hidelinks remove colour boxes around hyperlinks
+
+\documentclass[thesis=M,english]{FITthesis}[2012/10/20]
+
+\usepackage[utf8]{inputenc} 		% LaTeX source encoded as UTF-8
+\usepackage{soul} 				% To use underline with line breaks
+\usepackage[toc,page]{appendix}	% To create the apendix
+\usepackage{dirtree} 			% Directory tree visualisation
+\usepackage{amsmath}			% To write equations
+\usepackage{algorithm}			% To write algorithms	
+\usepackage{algorithmic}		% To write algorithms
+\usepackage{glossaries}			% To create the glosaries
+\usepackage{hyperref}			
+\usepackage{tabularx}			% To create tables
+\usepackage{verbatim}
+\usepackage{listings}
+\usepackage{color}				% To define and use colors
+\usepackage{graphicx}			
+\usepackage{pgfplots}			% To create graphs
+\usepackage{imakeidx}			% To define indexes
+    \makeindex
+\usepackage{geometry}
+\usepackage{tikz}
+\usepackage{etoolbox}
+\graphicspath{ {./imgs/} }		% Define the images path
+
+
+% % % % % % % % % %To dislay code correctly and with format% % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=HTML,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true
+  tabsize=3
+}
+
+\makeatletter
+\color{black}
+\let\default@color\current@color
+\makeatother
+
+
+\newcommand{\algorithmicdoinparallel}{\textbf{do in parallel}}
+\makeatletter
+\AtBeginEnvironment{algorithmic}{%
+  \newcommand{\FORALLP}[2][default]{\ALC@it\algorithmicforall\ #2\ %
+    \algorithmicdoinparallel\ALC@com{#1}\begin{ALC@for}}%
+}
+\makeatother
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+\department{Department of software engineering}
+\title{Framework for stock market Analysis Based on Opinion Mining}
+\authorGN{Milton} %author's given name/names
+\authorFN{Carranza} %author's surname
+\authorWithDegrees{Milton Carranza} %author's name with academic degrees
+\supervisor{Ing. Milan Dojchinovski}
+\acknowledgements{I would like to thank my lovely family, and friends for the support during writing of this thesis. Special thanks as well to \v Sebesta Family, because without their help the realization of these studies would not have been possible.}
+%\abstractCS{Framework pro analýzu trhů cenných papírů pomocí metody Opinion Mining.}
+%\abstractCS{Framework umožňující analýzu trhu s cennými papíry na základě Opinion Mining.}
+\abstractCS{Současný akciový trh funguje na základě kvantitativních a statisticky založených metodách, zatímco opomíjí metody kvalitativního rázu. 
+Pro příklad hodnocení týkající se různých společností uvedená v internetových zprávách nebývají nijak vzata v úvahu. 
+Hlavním cílem této diplomové práce je popis a následná realizace nástroje pro sběr, analýzu a sumarizaci informací o společnostech v internetových denících, který tak umožní předpovědět vývoj situace na základě kvalitativního průzkumu.}
+\abstractEN{Currently, the stock markets only take into consideration quantitative and statistical based methods while predicting the stocks rating (price), and they ignore the qualitative factors. For example, opinion about companies left in online news articles is not taken into consideration. The main goal of the thesis is to define and realize a tool for collecting, analyzing and summarizing qualitative information about companies left in news articles.}
+\placeForDeclarationOfAuthenticity{Prague} %where you have signed the declaration
+\keywordsCS{Opinion mining, sentiment analysis, crawlers, stock market, tokeniser, part of speech.}
+\keywordsEN{Opinion mining, sentiment analysis, crawlers, stock market, tokeniser, part of speech.}
+\declarationOfAuthenticityOption{4} %select as appropriate, according to the desired license
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\begin{document}
+
+	%\setsecnumdepth{part}
+
+	\chapter{Introduction}\label{introduction}
+	
+		\input{Introduction}
+		
+	\setsecnumdepth{all}
+	
+	\chapter{Theoretical Background and related work}\label{backgroundRelated}
+	
+		\input{PreviousWork}
+		
+		\input{Theory}
+	
+	\chapter{Analysis and design of the framework}\label{analysisDesign}
+	
+		\input{NewsCrawler}
+		
+		\input{SentimentAnalysis}
+	
+	\chapter{Realisation}\label{Realisation}
+
+		\input{Realisation}
+	
+	\chapter{Experimental evaluation \& Results}\label{experimentalEvaluation}
+	
+		\input{ExperimentalEvaulation}
+
+	\setsecnumdepth{part}
+
+	\begin{conclusion}
+		\input{Conclusions}
+	\end{conclusion}
+
+	\bibliographystyle{plain}
+		\bibliography{ref}
+
+	\printindex
+	
+	\setsecnumdepth{all}
+	\appendix
+
+	\chapter{Glossary}
+
+		\input{glossary}
+
+
+	\begin{appendices}
+		\chapter{Contents of the CD}\label{app:CDcontent}
+			\input{cd_content}
+	\end{appendices}
+	
+\end{document}

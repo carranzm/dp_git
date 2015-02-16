@@ -1,15 +1,36 @@
-In this chapter we will analyze the two basic components of this work, and we will design a solution in which the output data of the first one (News Crawler \ref{newsCrawler}) will be the input data of the second one (Sentiment Analysis \ref{sentimentAnalysis}).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%NEWS CRAWLER%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+In this chapter we will analyse the two basic components of this work, and we will design a solution in which the output data of the first one (News Crawler \ref{newsCrawler}) will be the input data of the second one (Sentiment Analysis \ref{sentimentAnalysis}). For this we will introduce some simple and general sequential algorithm that will give us a brief overview of how we will deliver our solution.
+
+
+\begin{algorithm}
+\caption{General Algorithm}\label{generalAlgorithm}
+\begin{algorithmic}[1]
+\FOR {\text{each company}}
+	\STATE \text{Crawl News articles;}
+	\STATE \text{Extract} \textit{article: date, title, content, author}\text{;}
+	\STATE \text{Classify} \textit{article}\text{;}
+	\STATE \text{Save} \textit{article}\text{;}
+\ENDFOR
+\STATE \text{Summarize} \textit{articles}\text{;}
+\STATE \text{Download \& Save} \textit{stock prices}\text{;}
+\end{algorithmic}
+\end{algorithm}
+
+Each part of the algorithm \ref{generalAlgorithm} will take one or several sections in this work, besides is the highest level of abstraction of the tasks that will be performed. This process will be repeated for each of the previously defined companies (see the table \ref{tab:analyzedCompanies}). Basically, we will crawl the news for every company (as shown in section \ref{newsCrawler}) and we will extract the information of our interest (as described in section \ref{locators}), after this we will classify the article in positive or negative (according to the section \ref{sentimentAnalysis}), finally we will be saving every article in our page repository \ref{pageRepository}. When we will finish the iteration, for all companies we will summarise the data and download the stock prices as described in the section \ref{priceRetrieval}. Later, with this data we will perform a statistical analysis (Pearson correlation \ref{PearsonCorr}), based on the assumption that the data that we obtained share a \emph{linear relationship}.
 
 
 \section{News crawler}\label{newsCrawler}
 
-This section will describe how the task of "news article retrieval" was performed in order to get the right data from the \gls{news endpoint}.
-In a perfect world when every Web application/Web page has it's own \gls{Web API} the "article retrieval" would be a trivial task that would consist on consuming a \gls{Web API} and we would get structured information, but unfortunately not all web pages allows access to their information through \gls{Web API}.
-We will use as \gls{news endpoint} "google news"; even if it doesn't have a \gls{Web API}, because the news articles there, are already categorized by company and date.
+This section will describe how the task of "news article retrieval" was performed in order to get the right data from the news endpoint.
+In a perfect world when every Web application/Web page has its own Web API the "article retrieval" would be a trivial task that would consist on consuming a Web API and we would get structured information, but unfortunately not all web pages allows access to their information through Web API.
+We will use as news endpoint "google news"; even if it doesn't have a Web API, because the news articles there, are already categorised by company and date.
 
 By crawling "google news", we will basically get links of articles pointing to different web pages; not articles \emph{per se}. This suppose a problem because every web page has different html structure. So, our crawler must be smart enough to associate one host to one particular page structure. To solve this problem we will introduce the term: Locators, which basically define for every host where is the data that we will extract.
 
-To get this information, we will develop what it's called in  Liu \cite[p. 312]{L2011}: "A focused crawler" \ref{focusedWebCrawling}, where we will focus on \emph{news articles} of a particular company. Besides, we will make several modifications to this algorithm in order to adapt it to our needs. A basic focused web crawler is shown in the figure: \ref{fig:Crawler_002}, our classifier will be based on the fact that we only want news articles, and we will crawl our seed with different parameters (table \ref{tab:query-string}) in order to obtain the desired data.
+To get this information, we will develop what is called in Liu \cite%[p. 312]
+{L2011}: "A focused crawler" \ref{focusedWebCrawling}, where we will focus on \emph{news articles} of a particular company. Besides, we will make several modifications to this algorithm in order to adapt it to our needs. A basic focused web crawler is shown in the figure: \ref{fig:Crawler_002}, our classifier will be based on the fact that we only want news articles, and we will crawl our seed with different parameters (table \ref{tab:query-string}) in order to obtain the desired data.
 
 	\begin{figure}\centering
 		\includegraphics[scale=0.3]{Crawler_002}
@@ -37,7 +58,8 @@ To get this information, we will develop what it's called in  Liu \cite[p. 312]{
 
 \subsection{Web Crawler}\label{webCrawler}
 
-According to Liu, \cite[p. 311]{L2011} a Web \gls{crawler} is basically a program that automatically download Web pages. To build the Web \gls{crawler}, we will need a set of seed pages; in our case, our main seed will look like follows: 
+According to Liu \cite%[p. 311]
+{L2011} a Web crawler is basically a program that automatically download Web pages. To build the Web crawler, we will need a set of seed pages; in our case, our main seed will look like follows: 
 \\\\
 \url{https://www.google.com/finance/company\_news?q=\%s&start=\%s&num=\%s}
 \\\\
@@ -47,7 +69,7 @@ According to Liu, \cite[p. 311]{L2011} a Web \gls{crawler} is basically a progra
 		\caption{Screenshot of Google News.}\label{fig:News_001}
 	\end{figure}
 
-Every variable in the \gls{query string} will represent something in particular, as described in  the table \ref{tab:query-string}.
+Every variable in the query string will represent something in particular, as described in  the table \ref{tab:query-string}.
 
 \begin{table}\centering
 	\caption{Query string variables}\label{tab:query-string}
@@ -56,19 +78,20 @@ Every variable in the \gls{query string} will represent something in particular,
    	\textbf{Variable}  & \textbf{Explanation} & \textbf{Example}  \\ \hline
     	q & 
 	In this variable, we will put the code of a particular company in the stock market.  & 
-	Let's say we want to retrieve all the news of apple(AAPL), the we will send: q=AAPL\\ \hline
+	Supposing that we want to retrieve all the news of apple(AAPL), the we will send: q=AAPL\\ \hline
 	start & 
 	This variable define in which index we will start watching the news.  & 
 	Assume there are 100 news available, and I want to start in news article number 20; so, we will send: start=20 \\ \hline
 	num & 
 	This variable define how many news articles I will retrieve in one request. Maximum per request is 50. &
-	Let's use the previous example, let's say we are starting in news article number 20, and we want to see the next 10 articles; so, we will send: start=20 and num=10 \\ \hline
+	We could use the previous example, assume we are starting in news article number 20, and we want to see the next 10 articles; so, we will send: start=20 and num=10 \\ \hline
     \end{tabular}
 \end{table}
 
-For each company we will generate \textit{N} number of links depending to the number of published articles per company. In every link that we will generate and crawl, we will find news articles links which will be pendant to be visited, these links are called:  \textit{the frontier}; which for efficiency and because it's small size (up to 50 links per crawled seed) will be stored in the main memory.
+For each company we will generate \textit{N} number of links depending to the number of published articles per company. In every link that we will generate and crawl, we will find news articles links which will be pendant to be visited, these links are called:  \textit{the frontier}; which for efficiency matters and because of its small size (up to 50 links per crawled seed) will be stored in the main memory.
 
-At the end we will have some sort of "preferential crawler"  \cite[p. 314]{L2011} due to not all the links of the page will be interesting for us; only the article links. From here, we will extract the article link, date, and title. To get this data we must check deeply the structure of the web page, to figure it out we help ourselves with \emph{Firefox developer tools}, which is a plugin of the Firefox Web browser, it will allow us to know the location (that's why further we will call this part of the application \emph{Locators}) of the element (title, date, link) of our interest. We can see in the figure \ref{fig:News_002} the plugin where we locate the main container of one particular news article. After identifying the container of the news article, we must identify the location of the title of the article, which contain as well the link of the article as shown in the figure \ref{fig:News_003}, and the last part would be to identify the date of the article, as shown in the figure \ref{fig:News_004}. 
+At the end we will have some sort of "preferential crawler"  \cite%[p. 314]
+{L2011} due to not all the links of the page will be interesting for us; only the article links. From here, we will extract the article link, date, and title. To get this data we must check deeply the structure of the web page, to figure it out we help ourselves with \emph{Firefox developer tools}, which is a plugin of the Firefox Web browser, it will allow us to know the location (that's why further we will call this part of the application \emph{Locators}) of the element (title, date, link) of our interest. We can see in the figure \ref{fig:News_002} the plugin where we locate the main container of one particular news article. After identifying the container of the news article, we must identify the location of the title of the article, which contain as well the link of the article as shown in the figure \ref{fig:News_003}, and the last part would be to identify the date of the article, as shown in the figure \ref{fig:News_004}. 
 
 	\begin{figure}\centering
 		\includegraphics[scale=0.35]{News_002}
@@ -86,20 +109,20 @@ At the end we will have some sort of "preferential crawler"  \cite[p. 314]{L2011
 	\end{figure}
 
 \subsection{Implementation Issues}\label{implementationIssues}
-In this section we will describe the "Implementation Issues" \cite[p. 315]{L2011} that we faced.
-
-We will use one open-source tool: "\gls{jsoup}" in order to download and parse a web page, so we will abstract this part, and we will focus on our main aim: news articles.
+In this section we will describe the "Implementation Issues" that we faced.
+%\cite[p. 315]{L2011}
+We will use one open-source tool: "jsoup" in order to download and parse a web page, so we will abstract this part, and we will focus on our main aim: news articles.
 
 \subsubsection{Fetching}\label{fetching}
-Once we have a particular link, and we will proceed to download the Web page, one important detail must be taken in consideration: \textit{timeout} connections; in the case of the application this parameter will be set to 30 seconds; which of course can be changed in the configuration file that we will call: "jsoup.properties". This part will be delegated to \gls{jsoup}.
+Once we have a particular link, and we will proceed to download the Web page, one important detail must be taken in consideration: \textit{timeout} connections; in the case of the application this parameter will be set to 30 seconds; which of course can be changed in the configuration file that we will call: "jsoup.properties". This part will be delegated to jsoup.
 
 \subsubsection{Parsing}\label{parsing}
-Again, the parsing part will be delegated to \gls{jsoup}. Which manages in a good and efficient way the whole page structure by using "\gls{hash tables}." In our particular case, once we fetched and parsed the article web page, we need to extract only the data that we are interested in. For this, and as we mentioned at the beginning of this chapter , we will introduce the term: "Locators" in the next section.
+Again, the parsing part will be delegated to jsoup. Which manages in a good and efficient way the whole page structure by using "hash tables." In our particular case, once we fetched and parsed the article web page, we need to extract only the data that we are interested in. For this, and as we mentioned at the beginning of this chapter , we will introduce the term: "Locators" in the next section.
 
 \subsubsection{Locators}\label{locators}
-The aim of the "news crawler" is basically to extract \textit{title, date, author, content} from a particular article, and if we take in consideration that every Web page has different structure, we need to define an extra component in order to extract accurately the information that we needed. We must mention that this method is very accurate when it tries to retrieve the article data.
+The aim of the "news crawler" is basically to extract \textit{title, date, author, content} from a particular article, and if we take in consideration that every Web page has \emph{different structure}, we need to define an extra component in order to extract accurately the information that we needed. We must mention that this method is very accurate when it tries to retrieve the article data.
 
-We will define a Locator as a custom \gls{data structure} that holds the particular representation of the structure of a web page in a particular host, in order to retrieve the data that we want. For this purpose a class can be found under the package: "com.carramil.dp.crawler" called: "Locator.java", and this class has it's input data in a properties file which we called: "crawler.properties". The structure of this file is as follows: We will enumerate \textit{N} number of hosts from 1 to \textit{N} and for each of them we will define the required information as shown in the table: \ref{tab:locator}. Each item between semi-colons is a tag or a path to a particular tag; if we want to specify a path we must do it by separating every tag with "-$>$". It's important to mention that there must not be blank spaces between each semi-colon (";"), and in the case one particular host has several different page structures we can use ampersand ("\&") to separate between tags. We will mention an example in order for this part to be clear.
+We will define a Locator as a custom data structure that holds the particular representation of the structure of a web page in a particular host, in order to retrieve the data that we want. For this purpose a class can be found under the package: "com.carramil.dp.crawler" called: "Locator.java", and this class has its input data in a properties file which we called: "crawler.properties". The structure of this file is as follows: We will enumerate \textit{N} number of hosts from 1 to \textit{N} and for each of them we will define the required information as shown in the table: \ref{tab:locator}. Each item between semi-colons is a path to a particular tag; if we want to specify a path we must do it by separating every tag with "-$>$". It is important to mention that there must not be blank spaces between each semi-colon (";"), and in the case one particular host has several different page structures we can use ampersand ("\&") to separate between tags. We will mention an example in order for this part to be clear.
 
 \begin{table}\centering
 	\caption{Locator format}\label{tab:locator}
@@ -170,7 +193,7 @@ span\#articleText\&div.columnLeft-$>$p;p.byline;span.timestamp;\\
 EEE MMM dd, yyyy hh:mma z\&dd MMM yyyy\&\\
 MMM dd, yyyy\&EEE, dd MMM yyyy\&EEEE, MMM dd yyyy"}
 
-But how to create a locator? we make a reference to \ref{crawlerProperties} in order to make an example on how to create one locator. And we will recall the \emph{Locator} of one particular how: \url{http://www.fool.com}, and we will use the following article to state the example: \url{http://www.fool.com/investing/general/2014/04/29/apple-incs-ipad-identity-crisis.aspx}
+But how to create a locator? we make a reference to \ref{crawlerProperties} in order to make an example on how to create one locator. And we will recall the \emph{Locator} of one particular how: \url{http://www.fool.com}, and we will use the following article to state the example:\\\ \url{Fool.com/investing/general/2014/04/29/apple-incs-ipad-identity-crisis.aspx}
 
 \begin{itemize}
 	\item First of all, we will consider the previously mentioned url, it looks like in figure \ref{fig:Locator_001}.
@@ -187,7 +210,7 @@ But how to create a locator? we make a reference to \ref{crawlerProperties} in o
 	\caption{Retrieving the title.}\label{fig:Locator_002}
 \end{figure}
 	
-	\item After this, we would like to know the location of the content of the news article. Here, again \emph{div.entry-content} is a unique location the webpage, or if we want to be more specific, we would say: \emph{body-$>$div.entry-content} as shown in figure \ref{fig:Locator_003}.
+	\item After this, we would like to know the location of the content of the news article. Here, again \emph{div.entry-content} is a unique location the webpage, or if we want to be more specific, we would write: \emph{body-$>$div.entry-content} as shown in figure \ref{fig:Locator_003}.
 
 \begin{figure}\centering
 	\includegraphics[scale=0.4]{Locator_003}
@@ -212,7 +235,7 @@ But how to create a locator? we make a reference to \ref{crawlerProperties} in o
 
 \subsubsection{Generic Locator}\label{genericLocator}
 
-When we think about the scalability of the locators (\ref{locators}), is quiet poor; not because it does not fulfill it's purpose, but because for every site, we \emph{must} examine it and take at least 5 to 10 minutes to examine the structure of the web page. And, while more news sources we have, more time we should spend constructing our locators. 
+When we think about the scalability of the locators (\ref{locators}), is quite poor; not because it does not fulfil its purpose, but because for every site, we \emph{must} examine the structure of the web page, and this \emph{manual} task takes around 5-10 minutes per site. And, while more news sources we would like to have, more time we should spend constructing our locators. 
 
 So, we have to come out with another method, that allow us to retrieve news article from different sources without spending time examining the structure of every news provider. For us, this method will be called \emph{Generic Locators}. 
 
@@ -225,17 +248,21 @@ As usual, when heuristics are applied, we have to do some trade-off in order to 
 	\caption{Web page without Locator defined}\label{fig:GL_1}
 \end{figure}
 
-We will state an example in order to make it clear. Let's consider this link \url{http://gulfbusiness.com/2014/04/apple-seeks-decisive-us-court-ruling-samsung/} (Figure: \ref{fig:GL_1}). So far, we have not implemented a Locator in order to crawl this host and gain 100\% of accuracy. So, in this case that's when the \emph{Generic Locator} comes to play. The text that a \emph{Locator} would retrieve would be the following: 
+We will state an example in order to make it clear. Let's consider this link \url{http://gulfbusiness.com/2014/04/apple-seeks-decisive-us-court-ruling-samsung/} (Figure: \ref{fig:GL_1}). So far, we have implemented a Locator in order to crawl this host and gain 100\% of accuracy. So, in this case that's when the \emph{Generic Locator} comes to play. The text that a \emph{Locator} would retrieve would be the following: 
 \\\\
-\emph{"Apple and Samsung return to \textbf{federal court} on Tuesday for opening statements in their latest patent battle, with the iPhone maker expected to present \textbf{more detailed} evidence in its attempt to win a U.S. ban on sales of several Samsung smartphones.Apple Inc and Samsung Electronics Co Ltd have been litigating around the world for nearly three years. Jurors awarded the iPhone maker about \$930 million after a 2012 trial in San Jose, California, but Apple failed to persuade U.S. District Judge Lucy Koh to issue a \textbf{permanent injunction} against the sale of Samsung phones.A sales ban would be a far \textbf{more serious} threat to Samsung, which earned \$7.7 billion in the quarter that ended in December. Samsung’s \textbf{mobile division}, which includes smartphones, generated operating profit of 5.47 trillion won (\$5.1 billion).The two companies are set to embark on another trial in San Jose over a \textbf{fresh batch} of Apple patents, which cover iPhone features like slide to unlock and search technology. Apple is seeking to ban sales of several Samsung phones, including the Galaxy S III.Likewise, Samsung claims Apple violated two of its patents, and is seeking to ban the iPhone 5. Samsung’s phones use the Android operating system developed by Google Inc.In rejecting Apple’s \textbf{previous bid} for a sales ban, Koh wrote that a consumer survey Apple submitted in the 2012 trial \textbf{likely inflated} the value that customers place on the smartphone features in dispute, meaning Apple does \textbf{not merit} an injunction. Apple is appealing that decision.Apple has hired the \textbf{same marketing} expert to conduct a \textbf{new consumer} survey for the \textbf{current trial}. But this latest effort contains \textbf{additional analysis} about how Apple’s patented features drive consumer demand, according to court filings.While the \textbf{prior survey} \textbf{only concluded} that there was \textbf{general demand} for the patented features, the \textbf{new study} attempts to quantify the proportion of customers Samsung would have lost if its smartphones did \textbf{not contain} those features, court filings show.Samsung tried to stop Apple from presenting that evidence to the jury, arguing that the methodology was unsound. However, Koh agreed in a February ruling to allow Apple to use the study.The trial is expected to last until early May.The case in U.S. District Court, Northern District of California is Apple Inc vs Samsung Electronics Co Ltd, 12-630."}
+\emph{"Apple and Samsung return to \textbf{federal court} on Tuesday for opening statements in their latest patent battle, with the iPhone maker expected to present \textbf{more detailed} evidence in its attempt to win a U.S. ban on sales of several Samsung smartphones.Apple Inc and Samsung Electronics Co (...)
+% Ltd have been litigating around the world for nearly three years. Jurors awarded the iPhone maker about \$930 million after a 2012 trial in San Jose, California, but Apple failed to persuade U.S. District Judge Lucy Koh to issue a \textbf{permanent injunction} against the sale of Samsung phones.A sales ban would be a far \textbf{more serious} threat to Samsung, which earned \$7.7 billion in the quarter that ended in December. Samsung’s \textbf{mobile division}, which includes smartphones, generated operating profit of 5.47 trillion won (\$5.1 billion).The two companies are set to embark on another trial in San Jose over a \textbf{fresh batch} of Apple patents, which cover iPhone features like slide to unlock and search technology. Apple is seeking to ban sales of several Samsung phones, including the Galaxy S III.Likewise, Samsung claims Apple violated two of its patents, and is seeking to ban the iPhone 5. Samsung’s phones use the Android operating system developed by Google Inc.In rejecting Apple’s \textbf{previous bid} for a sales ban, Koh wrote that a consumer survey Apple submitted in the 2012 trial \textbf{likely inflated} the value that customers place on the smartphone features in dispute, meaning Apple does \textbf{not merit} an injunction. Apple is appealing that decision.Apple has hired the \textbf{same marketing} expert to conduct a \textbf{new consumer} survey for the \textbf{current trial}. But this latest effort contains \textbf{additional analysis} about how Apple’s patented features drive consumer demand, according to court filings.While the \textbf{prior survey} \textbf{only concluded} that there was \textbf{general demand} for the patented features, the \textbf{new study} attempts to quantify the proportion of customers Samsung would have lost if its smartphones did \textbf{not contain} those features, court filings show.Samsung tried to stop Apple from presenting that evidence to the jury, arguing that the methodology was unsound. 
+However, Koh agreed in a February ruling to allow Apple to use the study.The trial is expected to last until early May.The case in U.S. District Court, Northern District of California is Apple Inc vs Samsung Electronics Co Ltd, 12-630."}
 \\\\
 And in the case of the generic locator we got: 
 \\\\
-\emph{\ul{Home \/ Technology \/ World Apple Seeks Decisive US Court Ruling Against Samsung Apple and Samsung have been litigating around the world for nearly three years. By Reuters April 1, 2014} Apple and Samsung return to \textbf{federal court} on Tuesday for opening statements in their latest patent battle, with the iPhone maker expected to present \textbf{more detailed} evidence in its attempt to win a U.S. ban on sales of several Samsung smartphones.Apple Inc and Samsung Electronics Co Ltd have been litigating around the world for nearly three years. Jurors awarded the iPhone maker about \$930 million after a 2012 trial in San Jose, California, but Apple failed to persuade U.S. District Judge Lucy Koh to issue a \textbf{permanent injunction} against the sale of Samsung phones.A sales ban would be a far \textbf{more serious} threat to Samsung, which earned \$7.7 billion in the quarter that ended in December. Samsung’s \textbf{mobile division}, which includes smartphones, generated operating profit of 5.47 trillion won (\$5.1 billion).The two companies are set to embark on another trial in San Jose over a \textbf{fresh batch} of Apple patents, which cover iPhone features like slide to unlock and search technology. Apple is seeking to ban sales of several Samsung phones, including the Galaxy S III.Likewise, Samsung claims Apple violated two of its patents, and is seeking to ban the iPhone 5. Samsung’s phones use the Android operating system developed by Google Inc.In rejecting Apple’s \textbf{previous bid} for a sales ban, Koh wrote that a consumer survey Apple submitted in the 2012 trial \textbf{likely inflated} the value that customers place on the smartphone features in dispute, meaning Apple does \textbf{not merit} an injunction. Apple is appealing that decision.Apple has hired the \textbf{same marketing} expert to conduct a \textbf{new consumer} survey for the \textbf{current trial}. But this latest effort contains \textbf{additional analysis} about how Apple’s patented features drive consumer demand, according to court filings.While the \textbf{prior survey} \textbf{only concluded} that there was \textbf{general demand} for the patented features, the \textbf{new study} attempts to quantify the proportion of customers Samsung would have lost if its smartphones did \textbf{not contain} those features, court filings show.Samsung tried to stop Apple from presenting that evidence to the jury, arguing that the methodology was unsound. However, Koh agreed in a February ruling to allow Apple to use the study.The trial is expected to last until early May.The case in U.S. District Court, Northern District of California is Apple Inc vs Samsung Electronics Co Ltd, 12-630. \ul{Get your Free Gulf Business Newsletter}}
+\emph{\ul{Home \/ Technology \/ World Apple Seeks Decisive US Court Ruling Against Samsung Apple and Samsung have been litigating around the world for nearly three years. By Reuters April 1, 2014} Apple and Samsung return to \textbf{federal court} on Tuesday for opening statements in their latest patent battle, with the iPhone maker expected to present \textbf{more detailed} evidence in its attempt to win a U.S. ban on sales of several Samsung smartphones.Apple Inc and Samsung Electronics Co  (...)
+% Ltd have been litigating around the world for nearly three years. Jurors awarded the iPhone maker about \$930 million after a 2012 trial in San Jose, California, but Apple failed to persuade U.S. District Judge Lucy Koh to issue a \textbf{permanent injunction} against the sale of Samsung phones.A sales ban would be a far \textbf{more serious} threat to Samsung, which earned \$7.7 billion in the quarter that ended in December. Samsung’s \textbf{mobile division}, which includes smartphones, generated operating profit of 5.47 trillion won (\$5.1 billion).The two companies are set to embark on another trial in San Jose over a \textbf{fresh batch} of Apple patents, which cover iPhone features like slide to unlock and search technology. Apple is seeking to ban sales of several Samsung phones, including the Galaxy S III.Likewise, Samsung claims Apple violated two of its patents, and is seeking to ban the iPhone 5. Samsung’s phones use the Android operating system developed by Google Inc.In rejecting Apple’s \textbf{previous bid} for a sales ban, Koh wrote that a consumer survey Apple submitted in the 2012 trial \textbf{likely inflated} the value that customers place on the smartphone features in dispute, meaning Apple does \textbf{not merit} an injunction. Apple is appealing that decision.Apple has hired the \textbf{same marketing} expert to conduct a \textbf{new consumer} survey for the \textbf{current trial}. But this latest effort contains \textbf{additional analysis} about how Apple’s patented features drive consumer demand, according to court filings.While the \textbf{prior survey} \textbf{only concluded} that there was \textbf{general demand} for the patented features, the \textbf{new study} attempts to quantify the proportion of customers Samsung would have lost if its smartphones did \textbf{not contain} those features, court filings show.Samsung tried to stop Apple from presenting that evidence to the jury, arguing that the methodology was unsound. 
+However, Koh agreed in a February ruling to allow Apple to use the study.The trial is expected to last until early May.The case in U.S. District Court, Northern District of California is Apple Inc vs Samsung Electronics Co Ltd, 12-630. \ul{Get your Free Gulf Business Newsletter}}
 \\\\
-In the last article we can observe the underlined text, which corresponds to the extra-text retrieved by the \emph{heuristic method (Generic Locator)}. And the text in the bold letters represents the part of speech extracted from the text, in this case doesn't affect the \emph{polarity} of the document. For the first document we had a negative score: -1.06451389862862 and for the second one 0.33956281372088865, according to the equations \ref{eq:ourRange1} and \ref{eq:ourRange2} that defines the criteria to assign the polarity to a document. In this case, both documents have \emph{negative polarity}; but why the different scores for each document if both of them states "almost" the same? The answer to this question is quiet simple in this case, the word that makes the biggest impact of the score is on the underlined part of the second document: \ul{Get your \emph{Free} Gulf Business Newsletter}. If we check our \emph{positve bag of words} in the line 797, there is the word \emph{Free} which is considered as part of the analysis and it will contribute to the average result in a positive way.
+In the last article we can observe the underlined text, which corresponds to the extra-text retrieved by the \emph{heuristic method (Generic Locator)}. And the text in the bold letters represents the part of speech extracted from the text, in this case doesn't affect the \emph{polarity} of the document. For the first document we had a negative score: -1.06451389862862 and for the second one 0.33956281372088865, according to the equations \ref{eq:ourRange1} and \ref{eq:ourRange2} that defines the criteria to assign the polarity to a document. In this case, both documents have \emph{negative polarity}; but why the different scores for each document if both of them states "almost" the same? The answer to this question is quite simple in this case, the word that makes the biggest impact of the score is on the underlined part of the second document: \ul{Get your \emph{Free} Gulf Business Newsletter}. If we check our file of \emph{positve bag of words}  \cite{M1995} in the line 797, there is the word \emph{Free} which is considered as part of the analysis and it will contribute to the average result in a positive way.
 \\\\
-We will now describe the \emph{Generic locator algorithm} (\ref{genericLocatorAlgorithm}), which basically takes the \emph{title, date, link and host} and verify if there is an actual locator that can process the web page accurately, then we must check if the link is already in our \emph{page repository}, after this, we will download the article and find the \emph{tag} that contains the \emph{title}, if we found it we will assign the \emph{tag} as \emph{parent} and we will iterate until we fulfill the condition of the \emph{minimum article lenght} (determined experimentally; around 200 characters) and on every iteration we will prepare for the next one, we will assign to the variable \emph{article\_text} the text of the current parent and to \emph{article\_length} the length of the parent, and we will update the \emph{parent} to it's \emph{parent}.
+We will now describe the \emph{Generic locator algorithm} (\ref{genericLocatorAlgorithm}), which basically takes the \emph{title, date, link and host} and verify if there is an actual locator that can process the web page accurately, then we must check if the link is already in our \emph{page repository}, after this, we will download the article and find the \emph{tag} that contains the \emph{title}, if we found it we will assign the \emph{tag} as \emph{parent} and we will iterate until we fulfill the condition of the \emph{minimum article lenght} (determined experimentally; around 200 characters) and on every iteration we will prepare for the next one, we will assign to the variable \emph{article\_text} the text of the current parent and to \emph{article\_length} the length of the parent, and we will update the \emph{parent} to its \emph{parent}.
 
 \begin{algorithm}
 \caption{Generic locator algorithm}\label{genericLocatorAlgorithm}
@@ -257,7 +284,7 @@ We will now describe the \emph{Generic locator algorithm} (\ref{genericLocatorAl
 			\STATE $parent \gets tag$;
 			\WHILE{$article\_lenght < min\_article\_lenght$} 
 				\STATE $article\_text \gets parent.text()$
-				\STATE $article\_lenght \gets lenght(article\_text)$
+				\STATE $article\_lenght \gets length(article\_text)$
 				\STATE $parent \gets parent.parent()$
 			\ENDWHILE		
 		\ELSE
@@ -271,14 +298,15 @@ We will now describe the \emph{Generic locator algorithm} (\ref{genericLocatorAl
 \end{algorithm}
 
 \subsubsection{Page repository}\label{pageRepository}
-Once that the page is fetch and parsed, according to Liu \cite[p. 321]{L2011}, it may be stored/indexed. In our case, we will need such a particular repository. Mostly because we are not interested in the web page \emph{per se}, but in it's content; as we mention in the subsection \ref{locators}. We could have chosen any particular storage method; file system, document oriented database, object oriented database, but for the purposes of this work we will use a relational database: MySQL because for the following reasons:
+Once that the page is fetch and parsed, according to Liu \cite%[p. 321]
+{L2011}, it may be stored/indexed. In our case, we will need such a particular repository. Mostly because we are not interested in the web page \emph{per se}, but in its content; as we mention in the subsection \ref{locators}. We could have chosen any particular storage method; file system, document oriented database, object oriented database, but for the purposes of this work we will use a relational database: MySQL because for the following reasons:
 
 \begin{itemize}
     \item The information that we are interested in, is just text.
     \item Several transactions will be executed simultaneously.
     \item Complex queries will be performed.
     \item Stored procedures capabilities.
-    \item Summarization operations will be performed quiet often.
+    \item Summarisation operations will be performed quite often.
 \end{itemize}
 
 The database server has the following characteristics:
@@ -291,16 +319,24 @@ The database server has the following characteristics:
     \item Server charset: UTF-8 Unicode (UTF8)
 \end{itemize}
 
-For all the news articles that will be saved in the database, it's important to clarify that no HTML will be stored, mostly because it's not the aim of the work. We will be saving the following fields: Title of the article, content of the article, link, post date, author (not mandatory) and web site. Basically we will index the database by link and by post date of the article. If in the future the original article needs to be checked, the link will be stored.
+For all the news articles that will be saved in the database, it is important to clarify that no HTML will be stored, mostly because it is not the aim of the work. We will be saving the following fields: Title of the article, content of the article, link, post date, author (not mandatory) and web site. Basically we will index the database by link and by post date of the article. If in the future the original article needs to be checked, the link will be stored.
 
 \subsubsection{Concurrency}\label{concurrency}
 
-Once again, we will make a reference to Liu, \cite[p. 322]{L2011}. A crawler basically consumes three main resources: network, CPU and disk. 
+Once again, we will make a reference to Liu, \cite%[p. 322]
+{L2011}. A crawler basically consumes three main resources: network, CPU and disk. 
 
 In the previous sections we have described basically a sequential crawler, and of course, even if we are really good programmers, and we manage to develop and implement an optimum algorithm, as we mention in the last paragraph, there will be some parameters that will make a bottleneck of our sequential application. 
 
 
-Lets assume one web page that weights around 800 KB, with a connection of 256 Kbps; according to the figure \ref{fig:Bandwidth} in which we represented the average download time without considering the overhead, it will take around 25 seconds, we could think that this download time is not that bad if we try to download only several web pages; but if we think about it deeply, when we try to download maybe hundreds, thousands or maybe millions, this 25 seconds become a huge overhead. And even for the one page case, this 25 seconds for the processor/CPU seems like ages of waiting, and it will depend on the number of cycles per seconds that the CPU can process, in the example in the table: \ref{tab:downloadIdleness} we have consider a single CPU of 2 GHz (2,000,000,000 cycles every second), and as we can see the idleness of the processor (assuming that the processor is not doing anything else but processing our download request) is quiet big and it decreases while a faster download speed we have, but even with today's highest bandwidths available the idleness of the CPU would be quiet high.
+
+To state an example we will assume the following: 
+\begin{itemize}
+    \item A web page that weights around 800 KB
+    \item a connection of 256 Kbps
+\end{itemize}
+
+According to the figure \ref{fig:Bandwidth} in which we have represented the average download time without considering the \emph{overhead}, it will take around 25 seconds. We could think that this download time is not that bad if we try to download only several web pages; but if we think about it deeply, when we try to download maybe hundreds, thousands or maybe millions, this 25 seconds become a huge overhead. And even for the one page case, this 25 seconds for the processor/CPU seems like ages of waiting, and it will depend on the number of cycles per seconds that the CPU can process, in the example in the table: \ref{tab:downloadIdleness} we have consider a single CPU of 2 GHz (2,000,000,000 cycles every second), and as we can see the idleness of the processor (assuming that the processor is not doing anything else but processing our download request) is quite big and it decreases while we have a faster download speed, but even with today's highest commercial bandwidths available, the idleness of the CPU would be quite high.
 
 \begin{table}\centering
 	\caption{Download time \& CPU Idleness}\label{tab:downloadIdleness}
@@ -313,7 +349,8 @@ Lets assume one web page that weights around 800 KB, with a connection of 256 Kb
     \end{tabular}
 \end{table}
 
-According to Liu \cite[p. 322]{L2011}: the most straightforward way to \emph{speed-up} a crawler is through concurrent processes or threads. Multiprocessing may be somewhat easier to implement than multithreading depending on the programming language and platform.
+According to Liu \cite%[p. 322]
+{L2011}: the most straightforward way to \emph{speed-up} a crawler is through concurrent processes or threads. Multiprocessing may be somewhat easier to implement than multithreading depending on the programming language and platform.
 
 \begin{figure}\centering
 	\caption{Web page download}\label{fig:Bandwidth}
@@ -366,4 +403,35 @@ According to Liu \cite[p. 322]{L2011}: the most straightforward way to \emph{spe
 	\end{tikzpicture}
 \end{figure}
 
-This word for us (\emph{speed-up}) will have a deeper meaning in the chapter \ref{experimentalEvaluation}, where we will show experimentally the decrease of the idleness of the CPU and the threshold of the parallelization of the crawler.
+This word for us (\emph{speed-up}) will have a deeper meaning in the chapter \ref{experimentalEvaluation}, where we will show experimentally the decrease of the idleness of the CPU and the threshold of the parallelisation of the crawler.
+
+In our particular case, we have to make reference to the sequential solution which basically iterates every company until it reaches the last one, after this the collected information is summarised. This approach has the worst time execution (remember: \ref{ParTime}), but of course the best efficiency (remember: \ref{ParEfficiency}); this is represented in the figure \ref{fig:Sequential_1}.
+
+When we will talk about the parallel solution, we will create a pool of requests where we will push the tasks for every company and the framework itself will identify the number of processors available, and it will start to process a set of requests according to the hardware resources available; then it will wait until the last company is processed; this is related to the concept of \emph{Barrier synchronization} (\ref{BarrierSynchronization}). In this case, there will be a threshold where the time will be the best and the speedup as well will be the best; this will be demonstrated experimentally in the chapter \ref{experimentalEvaluation} in the section \ref{MultiThreadingPerformance} specifically in the table \ref{tab:threadsTime}. The idea of the parallel algorithm is depicted in the figure: \ref{fig:Concurrency_1}, and the pseudocode is described in the algorithm \ref{parallelCrawlerAlgorithm} which is implemented in the file \emph{CrawlerThreadPool.java}, this will be the starting point of the console application.
+
+\begin{algorithm}
+\caption{Parallel Crawler Algorithm}\label{parallelCrawlerAlgorithm}
+\begin{algorithmic}[1]
+\STATE \text{Initialize the thread pool;}
+\STATE \text{Insert the companies in the thread pool;}
+\FORALLP {\text{companies}}
+	\STATE \text{Apply the general sequential algorithm \ref{generalAlgorithm};}
+\ENDFOR
+\STATE \text{Wait until the last task is done (Barrier \ref{BarrierSynchronization}) ;}
+\STATE \text{Summarize} \textit{articles}\text{;}
+\STATE \text{Download \& Save} \textit{stock prices}\text{;}
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{figure}\centering
+	\includegraphics[scale=0.4]{Sequential}
+	\caption{Sequential diagram}\label{fig:Sequential_1}
+\end{figure}
+
+\begin{figure}\centering
+	\includegraphics[scale=0.4]{Concurrency}
+	\caption{Model of the parallel solution.}\label{fig:Concurrency_1}
+\end{figure}
+
+
