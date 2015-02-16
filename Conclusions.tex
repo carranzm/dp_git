@@ -1,0 +1,21 @@
+\section{Conclusions}
+
+As we proposed since the beginning, there are several factors that affects the price of a particular stock, besides the most common one: \emph{supply and demmand}, our initial position and the most natural was that the positive news are positively correlated with the positive increments of the stock and vice-versa, the negative news are positively correlated with the drops in the stock prices. 
+
+At the beginning what we tried to achieve was some numerical correlation by accounting qualitative factors, here came to play the news articles. This articles could have positive or negative polarity and somehow, according to our initial position and to the data obtained we can say that in most of cases the companies has almost same correlation in positive and negative articles, usually negative, which states that only by publishing news for a company that follows this pattern, means that the stock price may not improve, indeed it will go down.
+
+Most of the work that we are doing here is about to structure information that doesn't have a particular, uniform or homogeneous structure. So, according to the processed information, it is shown once again that this is a particularly difficult and time consuming task to automatize the retrieval of unstructured information. In our case this happen because every Web page has different structure; even though they could have a strict HTML structure, but we are not talking about it, but to the location of the information we want to retrieve from  the different sources of information.
+
+Web 2.0 plays an important role in this work; because it allows users to interact and collaborate as creators of content. In our case, this work was possible to developed because by these days we have the appropriate tools and the availability of the data to do a research like this. In our case the content creators are every reporter that works for a News Portal writing articles.
+
+It's Strongly Recommended for Web Crawlers to implement \emph{Parallelism}. Because the CPU while is waiting for downloading a Web Page or performing I/O operations, is wasting a lot of CPU cycles that could be used by another thread in order to do some useful computation.
+
+\section{Future work}
+
+Here we will mention some directives regarding this work. In previous work that have been done in this topic, one limitation was the number of articles; in our case as mentioned in the results section we retrieve more than 15,000 articles for the 36 companies in one month. So it would be worth to get one more level of detail by trying to get the published time of the articles and perform a real-time analysis with the stock prices.
+
+Besides, we can apply more advanced statistical methods in order to analyze the causality of the events. For this we recommend the ARMA Models which stands for autoregressive–moving-average (ARMA) models.
+
+As we know, heuristics are basically experienced-based techniques for problem solving. In our case we applied heuristics to try to extract a news article from a host that we haven't construct it's locator; to this heuristic technique in our work we called it \emph{Generic Locator}, and the future work is to try to improve this algorithm in order to increase the rate of extracted news articles.
+
+Finally, the last directive would be to consider the implementation of the Web 3.0 (Semantic Web) in the articles we retrieve. In order not only to classify the polarity of the article but to relate the information contained in the article with the web of data.
